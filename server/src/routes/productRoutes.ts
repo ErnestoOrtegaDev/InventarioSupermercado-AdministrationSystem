@@ -6,19 +6,8 @@ import {
     deleteProduct 
 } from '../controllers/productController';
 import { protect } from '../middleware/authMiddleware';
-import { create } from 'node:domain';
 
 const router = express.Router();
-console.log('Router de Productos inicializado'); 
-
-router.get('/test', (req, res) => {
-    console.log('Ping recibido en Productos');
-    res.json({ 
-        status: 'success', 
-        message: 'El Router de PRODUCTOS está conectado y escuchando 📦',
-        timestamp: new Date()
-    });
-});
 
 router.use(protect);
 router.get('/supermarket/:supermarketId', getProductsBySupermarket);
