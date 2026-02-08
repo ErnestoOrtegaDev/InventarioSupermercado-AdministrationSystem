@@ -120,3 +120,29 @@ export const logoutUser = (req: Request, res: Response) => {
     res.cookie('jwt-refresh', '', { httpOnly: true, expires: new Date(0) });
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
 };
+
+// @desc    Obtener usuario actual (Profile)
+// @route   GET /api/auth/profile
+// @access  Private
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+        // req.user viene del middleware 'protect'
+        if (!req.user) {
+            res.status(401).json({ message: 'No autorizado' });
+            return;
+        }
+        
+        // CORRECCIÓN: Usamos _id en lugar de id
+        const user = await User.findById(req.user._id).select('-password');
+        
+        if (!user) {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+            return;
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener perfil' });
+    }
+};
