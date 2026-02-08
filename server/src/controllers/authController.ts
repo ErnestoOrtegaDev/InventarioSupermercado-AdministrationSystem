@@ -61,18 +61,24 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             // Generar Token y Cookie
             generateTokens(res, user._id);
 
-            res.json({
-                _id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                role: user.role,
-            });
-        } else {
-            res.status(401).json({ message: 'Email o contraseña inválidos' });
-        }
+        const userData = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role, // <--- ESTE ES EL IMPORTANTE
+            supermarket: user.supermarket
+        };
+
+        res.json({
+            message: 'Inicio de sesión exitoso',
+            user: userData // Enviamos el objeto limpio
+        });
+    } else {
+        res.status(401).json({ message: 'Email o contraseña inválidos' });
+    }
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).json({ message: 'Error en el servidor' });
     }
 };
@@ -133,7 +139,9 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
         }
         
         // CORRECCIÓN: Usamos _id en lugar de id
-        const user = await User.findById(req.user._id).select('-password');
+        const user = await User.findById(req.user._id)
+        .select('-password')
+        .populate('supermarket', 'name');
         
         if (!user) {
             res.status(404).json({ message: 'Usuario no encontrado' });

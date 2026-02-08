@@ -7,7 +7,8 @@ export interface IUser extends Document {
     lastName: string;
     email: string;
     password?: string;
-    role: 'admin' | 'worker' | 'provider'; 
+    role: 'admin' | 'worker' | 'provider' | 'manager';
+    supermarket?: mongoose.Types.ObjectId;
     status: boolean; 
     googleId?: string;
     //Soft Delete
@@ -47,6 +48,11 @@ const UserSchema: Schema = new Schema({
         type: String,
         enum: ['admin', 'worker', 'provider'],
         default: 'worker'
+    },
+    supermarket: {
+        type: Schema.Types.ObjectId,
+        ref: 'Supermarket', 
+        required: false     
     },
     status: {
         type: Boolean,

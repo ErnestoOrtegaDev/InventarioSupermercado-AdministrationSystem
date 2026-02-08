@@ -4,12 +4,36 @@ import Supermarket from '../models/Supermarket';
 // @desc    Obtener todos los supermercados
 // @route   GET /api/supermarkets
 // @access  Private (Admin/Worker/Provider)
-export const getSupermarkets = async (req: Request, res: Response) => {
+export const getSupermarkets = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Traemos todos los supermercados activos
-        const supermarkets = await Supermarket.find({ active: true });
+        if (!req.user) {
+            res.status(401).json({ message: 'Usuario no autenticado' });
+            return;
+        }
+        const { role, supermarket } = req.user; 
+
+        let query = { active: true }; 
+
+        // LÓGICA DE ROLES:
+        
+        // CASO A: Admin o Proveedor -> Ven TODOS los supermercados
+        if (role === 'admin' || role === 'provider') {
+        } 
+        
+        // CASO B: Manager o Worker -> Solo ven SU supermercado
+        else if (role === 'manager' || role === 'worker') {
+            if (!supermarket) {
+                res.status(400).json({ message: 'Usuario sin supermercado asignado' });
+                return;
+            }
+            Object.assign(query, { _id: supermarket });
+        }
+
+        const supermarkets = await Supermarket.find(query);
         res.json(supermarkets);
+
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Error al obtener supermercados' });
     }
 };
