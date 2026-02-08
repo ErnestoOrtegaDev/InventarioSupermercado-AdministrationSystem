@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables (AGREGA ESTO)
+.env
+.env.development
+.env.production
+.env.test
+
+# Mantiene el ejemplo para que otros sepan qué variables crear (opcional)
+!.env.example
