@@ -1,3 +1,5 @@
+/* src/store/supermarketStore.ts */ 
+
 import { create } from 'zustand';
 import api from '../api/axios';
 import type { Supermarket } from '../types';

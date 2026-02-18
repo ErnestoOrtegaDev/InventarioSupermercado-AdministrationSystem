@@ -1,3 +1,5 @@
+/* src/components/supermarket/SuperMarketModal.tsx */ 
+
 import { useState, useEffect } from 'react';
 import { X, Save, Store, MapPin, Phone } from 'lucide-react';
 import { useSupermarketStore } from '../../store/supermarketStore';

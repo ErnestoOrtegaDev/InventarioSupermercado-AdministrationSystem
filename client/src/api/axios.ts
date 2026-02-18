@@ -1,3 +1,5 @@
+/* src/api/axios.ts */
+
 import axios from 'axios';
 
 // Vite expone las variables en import.meta.env
