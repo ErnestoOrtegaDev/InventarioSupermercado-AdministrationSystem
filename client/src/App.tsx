@@ -5,6 +5,7 @@ import { LoginPage } from './pages/LoginPage';
 import { SupermarketsPage } from './pages/SupermarketsPage'; // <--- IMPORTANTE
 import { useAuthStore } from './store/authStore';
 import { MainLayout } from './components/layout/MainLayout'; // Asegúrate que la ruta sea correcta
+import { UsersPage } from './pages/UserPage';
 
 // Componente para proteger rutas (Guardian)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -54,7 +55,7 @@ function App() {
             {/* Rutas del Sistema */}
             <Route path="supermarkets" element={<SupermarketsPage />} />
             <Route path="inventory" element={<div>Página de Inventario (Próximamente)</div>} />
-            <Route path="users" element={<div>Gestión de Usuarios</div>} />
+            <Route path="users" element={<UsersPage />} />
             <Route path="settings" element={<div className="p-6">Panel de Configuración</div>} />
         </Route>
         

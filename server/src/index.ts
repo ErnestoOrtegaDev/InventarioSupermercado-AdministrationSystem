@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes';
 import supermarketRoutes from './routes/supermarketRoutes';
 import productRoutes from './routes/productRoutes';
 import notificationRoutes from './routes/notificationRoutes';
+import userRoutes from './routes/userRoutes';
 
 // Configuración de variables de entorno
 dotenv.config();
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/supermarkets', supermarketRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/users', userRoutes);
 
 /* Ruta de prueba
 app.get('/', (req: Request, res: Response) => {

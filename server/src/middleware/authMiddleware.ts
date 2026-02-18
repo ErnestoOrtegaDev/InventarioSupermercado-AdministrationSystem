@@ -53,3 +53,17 @@ export const adminOnly = (req: Request, res: Response, next: NextFunction) => {
         res.status(403).json({ message: 'Acceso denegado: Se requiere rol de Administrador' });
     }
 };
+
+// @desc    Autorizar por roles
+export const authorizeRoles = (...roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction): void => {
+        // Verificamos si el usuario existe y si su rol está en la lista de permitidos
+        if (!req.user || !roles.includes(req.user.role)) {
+            res.status(403).json({ 
+                message: `El rol '${req.user?.role}' no tiene permisos para acceder a este recurso` 
+            });
+            return;
+        }
+        next();
+    };
+};
