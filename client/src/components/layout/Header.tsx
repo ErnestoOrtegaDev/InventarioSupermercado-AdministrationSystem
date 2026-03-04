@@ -14,9 +14,7 @@ export const Header = () => {
 
             {/* Perfil y Notificaciones */}
             <div className="flex items-center gap-6">
-                <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                    <NotificationBell />
-                </button>
+                <NotificationBell />
 
                 <div className="flex items-center gap-3">
                     <div className="text-right hidden sm:block">

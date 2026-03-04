@@ -1,7 +1,7 @@
 /* src/components/layout/Sidebar.tsx */
 
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Package, Store, Users, Settings, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Package, Store, Users, LogOut, X, Clock } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import clsx from 'clsx'; // Utilidad para clases condicionales
 import Swal from 'sweetalert2';
@@ -29,7 +29,9 @@ export const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
             { to: '/users', icon: Users, label: 'Usuarios' },
         ] : []),
 
-        { to: '/settings', icon: Settings, label: 'Configuración' },
+        ...(user?.role === 'admin' || user?.role === 'manager') ? [
+            {to: '/history', icon: Clock, label: 'Historial de Movimientos'},
+        ] : [],
     ];
 
     const handleLogout = () => {

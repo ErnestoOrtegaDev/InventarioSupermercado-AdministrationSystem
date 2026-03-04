@@ -10,6 +10,7 @@ import { LoginPage } from './pages/LoginPage';
 import { SupermarketsPage } from './pages/SupermarketsPage'; 
 import { InventoryPage } from './pages/InventoryPage'; 
 import Dashboard  from './pages/DashboardPage'; 
+import MovementHistory from './pages/MovementHistoryPage';
 
 // Componente para proteger rutas (Guardian)
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -55,7 +56,7 @@ function App() {
             <Route path="supermarkets" element={<SupermarketsPage />} />
             <Route path="inventory" element={<InventoryPage/>} />
             <Route path="users" element={<UsersPage />} />
-            <Route path="settings" element={<div className="p-6">Panel de Configuración</div>} />
+            <Route path="history" element={<MovementHistory />} />
         </Route>
         
         <Route path="*" element={<Navigate to="/login" />} />

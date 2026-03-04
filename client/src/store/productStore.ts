@@ -4,6 +4,8 @@ import api from '../api/axios';
 import type { Product } from '../types';
 import Swal from 'sweetalert2';
 
+import { useNotificationStore } from './notificationStore';
+
 // Agregamos la interfaz para los datos del Dashboard
 export interface DashboardData {
     kpis: {
@@ -107,6 +109,7 @@ export const useProductStore = create<ProductState>((set) => ({
             set((state) => ({ products: state.products.map(p => p._id === id ? data : p) }));
             if (data.alert) {
                 Swal.fire({ icon: 'warning', title: '¡Stock Crítico!', text: data.alertMessage });
+                useNotificationStore.getState().fetchNotifications(data.supermarket);
             } else {
                 Swal.fire({ icon: 'success', title: '¡Actualizado!', timer: 1500, showConfirmButton: false });
             }
