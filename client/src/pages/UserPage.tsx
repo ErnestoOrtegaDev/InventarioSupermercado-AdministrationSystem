@@ -43,7 +43,7 @@ export const UsersPage = () => {
     };
 
     return (
-        <div className="space-y-6">
+    <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Gestión de Usuarios</h1>
@@ -51,7 +51,7 @@ export const UsersPage = () => {
                 </div>
                 <button 
                     onClick={handleOpenCreate} 
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-md active:scale-95"
+                    className="flex items-center gap-2 bg-rose-700 text-white px-4 py-2 rounded-lg hover:bg-rose-800 transition-all shadow-md active:scale-95"
                 >
                     <Plus size={20} />
                     Nuevo Usuario
@@ -75,7 +75,8 @@ export const UsersPage = () => {
                             {isLoading && users.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="py-10 text-center">
-                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
+                                        {/* Spinner actualizado a rose-600 */}
+                                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-rose-600 mx-auto"></div>
                                     </td>
                                 </tr>
                             ) : users.length === 0 ? (
@@ -89,7 +90,8 @@ export const UsersPage = () => {
                                         {/* Nombre y Avatar */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                                                {/* Avatar actualizado a tonos rose */}
+                                                <div className="h-10 w-10 rounded-full bg-rose-100 text-rose-800 flex items-center justify-center font-bold">
                                                     {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                                                 </div>
                                                 <div>
@@ -131,7 +133,7 @@ export const UsersPage = () => {
                                             <div className="flex items-center justify-center gap-2">
                                                 <button 
                                                     onClick={() => handleOpenEdit(user)}
-                                                    className="p-2 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-2 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-lg transition-colors"
                                                     title="Editar"
                                                 >
                                                     <Edit size={18} />

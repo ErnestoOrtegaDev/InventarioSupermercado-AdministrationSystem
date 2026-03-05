@@ -93,12 +93,12 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
     const requiresSupermarket = formData.role === 'manager' || formData.role === 'worker';
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
                 
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                        <UserIcon className="text-blue-600" size={24} />
+                        <UserIcon className="text-rose-600" size={24} />
                         {userToEdit ? 'Editar Usuario' : 'Nuevo Usuario'}
                     </h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1 rounded-full transition-colors">
@@ -111,11 +111,11 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-                            <input type="text" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} />
+                            <input type="text" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-600 outline-none" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Apellidos</label>
-                            <input type="text" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} />
+                            <input type="text" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-600 outline-none" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} />
                         </div>
                     </div>
 
@@ -123,7 +123,7 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
                         <div className="relative">
                             <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
-                            <input type="email" required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                            <input type="email" required className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-600 outline-none" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                         </div>
                     </div>
 
@@ -133,7 +133,7 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                         </label>
                         <div className="relative">
                             <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
-                            <input type="password" required={!userToEdit} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                            <input type="password" required={!userToEdit} className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-600 outline-none" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                         </div>
                     </div>
 
@@ -143,7 +143,7 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                             <div className="relative">
                                 <Briefcase className="absolute left-3 top-3 text-gray-400" size={18} />
                                 <select 
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white appearance-none"
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-600 outline-none bg-white appearance-none"
                                     value={formData.role} 
                                     onChange={e => setFormData({...formData, role: e.target.value as User['role'], supermarket: ''})}
                                 >
@@ -163,7 +163,7 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                                 <select 
                                     required={requiresSupermarket}
                                     disabled={!requiresSupermarket}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white appearance-none disabled:bg-gray-100 disabled:text-gray-400"
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-600 outline-none bg-white appearance-none disabled:bg-gray-100 disabled:text-gray-400"
                                     value={formData.supermarket} 
                                     onChange={e => setFormData({...formData, supermarket: e.target.value})}
                                 >
@@ -178,7 +178,7 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
 
                     <div className="flex gap-3 pt-4 border-t border-gray-100 mt-6">
                         <button type="button" onClick={onClose} className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">Cancelar</button>
-                        <button type="submit" disabled={isLoading} className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center justify-center gap-2">
+                        <button type="submit" disabled={isLoading} className="flex-1 px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-medium shadow-md transition-all flex items-center justify-center gap-2">
                             {isLoading ? 'Guardando...' : <><Save size={18} />Guardar</>}
                         </button>
                     </div>
