@@ -34,14 +34,15 @@ const MovementHistory = () => {
     }
 
     if (error) {
-        return <div className="p-8 text-center text-red-500 font-semibold">Error: {error}</div>;
+        return <div className="p-8 text-center text-red-500 font-semibold">Error: Sesion Expirada</div>;
     }
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen font-sans">
+    <div className="p-6 bg-gray-50 min-h-screen font-sans">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <ArrowsRightLeftIcon className="h-6 w-6 text-blue-600" />
+                    {/* Ícono actualizado a rose-600 */}
+                    <ArrowsRightLeftIcon className="h-6 w-6 text-rose-600" />
                     Historial de Movimientos
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
@@ -92,7 +93,8 @@ const MovementHistory = () => {
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className="text-gray-400 line-through text-xs mr-2">{mov.previousStock}</span>
-                                            <span className="font-bold text-blue-600">{mov.newStock}</span>
+                                            {/* Nuevo stock en rose-600 en lugar de azul */}
+                                            <span className="font-bold text-rose-600">{mov.newStock}</span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600 text-xs">
                                             {mov.description}
