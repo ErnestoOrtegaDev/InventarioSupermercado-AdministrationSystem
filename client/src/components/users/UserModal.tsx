@@ -14,7 +14,7 @@ interface UserModalProps {
 
 export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
     const { addUser, updateUser } = useUserStore();
-    // Traemos los supermercados del store para el <select>
+    // We bring the supermarkets from the store for the <select>
     const { supermarkets, fetchSupermarkets } = useSupermarketStore(); 
     
     const [isLoading, setIsLoading] = useState(false);
@@ -23,20 +23,20 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
         firstName: '',
         lastName: '',
         email: '',
-        password: '', // Solo requerido al crear
+        password: '', // Only Required when create it
         role: 'worker' as User['role'],
-        supermarket: '', // Guardaremos el ID
+        supermarket: '', // Save ID
         active: true
     });
 
-    // Cargar supermercados si no los tenemos
+    // Load supermarkets if we don't have them
     useEffect(() => {
         if (supermarkets.length === 0) {
             fetchSupermarkets();
         }
     }, [supermarkets.length, fetchSupermarkets]);
 
-    // Llenar datos al abrir la modal
+    // Fill in data when opening the modal
     useEffect(() => {
         if (isOpen) {
             if (userToEdit) {
@@ -44,11 +44,11 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                     firstName: userToEdit.firstName,
                     lastName: userToEdit.lastName,
                     email: userToEdit.email,
-                    password: '', // Dejamos la contraseña en blanco por seguridad al editar
+                    password: '', // We leave the password blank for security reasons when editing.
                     role: userToEdit.role,
-                    // Extraemos el ID si el backend lo mandó como objeto poblado (.populate)
+                    // We extract the ID if the backend sent it as a populated object (.populate).
                     supermarket: typeof userToEdit.supermarket === 'object' ? userToEdit.supermarket?._id || '' : userToEdit.supermarket || '',
-                    active: userToEdit.status ?? true // Usamos status (o active dependiendo de tu modelo)
+                    active: userToEdit.status ?? true // We use status (or active depending on your model)
                 });
             } else {
                 setFormData({ firstName: '', lastName: '', email: '', password: '', role: 'worker', supermarket: '', active: true });
@@ -63,15 +63,15 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
         setIsLoading(true);
         
         try {
-            // Limpiamos los datos a enviar
+            // We clean the data to be sent
             const dataToSend: Partial<typeof formData> = { ...formData };
             
-            // Si estamos editando y no escribió contraseña nueva, NO la enviamos
+            // If we are editing and you did not enter a new password, we will NOT send it.
             if (userToEdit && !dataToSend.password) {
                 delete dataToSend.password;
             }
 
-            // Si es Admin o Provider, no enviamos supermercado
+            // If you are an Admin or Provider, we do not deliver groceries.
             if (dataToSend.role === 'admin' || dataToSend.role === 'provider') {
                 delete dataToSend.supermarket;
             }
@@ -83,13 +83,13 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
             }
             onClose();
         } catch {
-            // El error ya lo maneja SweetAlert en el Store
+            // The error is already handled by SweetAlert in the Store.
         } finally {
             setIsLoading(false);
         }
     };
 
-    // ¿El rol seleccionado requiere una sucursal física?
+    // Does the selected role require a physical branch?
     const requiresSupermarket = formData.role === 'manager' || formData.role === 'worker';
 
     return (
@@ -155,7 +155,7 @@ export const UserModal = ({ isOpen, onClose, userToEdit }: UserModalProps) => {
                             </div>
                         </div>
 
-                        {/* Selector Dinámico de Supermercado */}
+                        {/* Dynamic Selector for Supermarkets*/}
                         <div>
                             <label className={`block text-sm font-medium mb-1 ${requiresSupermarket ? 'text-gray-700' : 'text-gray-400'}`}>Asignar a Sucursal</label>
                             <div className="relative">
