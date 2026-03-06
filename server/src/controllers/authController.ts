@@ -6,21 +6,21 @@ import User from '../models/User';
 import generateTokens from '../utils/generateToken';
 import { sendEmail } from '../utils/sendEmail';
 
-// @desc    Registrar un nuevo usuario
+// @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
 export const registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { firstName, lastName, email, password, role } = req.body;
 
-        // Verificar si ya existe
+        // Verify if user already exists
         const userExists = await User.findOne({ email });
         if (userExists) {
             res.status(400).json({ message: 'El usuario ya existe' });
             return;
         }
 
-        // Crear usuario
+        // Create User
         const user = await User.create({
             firstName,
             lastName,
@@ -30,7 +30,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         });
 
         if (user) {
-            // Generar Token y Cookie
+            // Generate Token and Cookie
             generateTokens(res, user._id);
 
             res.status(201).json({
@@ -49,18 +49,18 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-// @desc    Autenticar usuario y obtener token
+// @desc    Authenticate user & get token
 // @route   POST /api/auth/login
 // @access  Public
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
 
-        // Buscar usuario 
+        // Search for user by email and include password field
         const user = await User.findOne({ email }).select('+password');
 
         if (user && (await user.matchPassword(password))) {
-            // Generar Token y Cookie
+            // Generate Token and Cookie
             generateTokens(res, user._id);
 
         const userData = {
@@ -68,13 +68,13 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            role: user.role, // <--- ESTE ES EL IMPORTANTE
+            role: user.role, 
             supermarket: user.supermarket
         };
 
         res.json({
             message: 'Inicio de sesión exitoso',
-            user: userData // Enviamos el objeto limpio
+            user: userData // Send user data to frontend (except password)
         });
     } else {
         res.status(401).json({ message: 'Email o contraseña inválidos' });
@@ -85,12 +85,12 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-// @desc    Refrescar Access Token
+// @desc    Refresh Access Token
 // @route   POST /api/auth/refresh
 // @access  Public 
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Leer el Refresh Token de la cookie
+        // Read Refresh Token from cookie
         const refreshToken = req.cookies['jwt-refresh'];
 
         if (!refreshToken) {
@@ -98,7 +98,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        // Verificar el Refresh Token
+        // Verify Refresh Token
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET as string) as { userId: string };
 
         const user = await User.findById(decoded.userId);
@@ -108,20 +108,20 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
             return;
         }
 
-        // Emitimos NUEVOS tokens (Access nuevo + Refresh nuevo)
+        // Broadcast new Access Token
         generateTokens(res, user._id);
 
         res.json({ message: 'Token refrescado exitosamente' });
 
     } catch (error) {
-        // Si el refresh token expiró o es inválido, forzamos logout
+        // If token is invalid or expired, clear cookies
         res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
         res.cookie('jwt-refresh', '', { httpOnly: true, expires: new Date(0) });
         res.status(403).json({ message: 'Refresh token inválido o expirado' });
     }
 };
 
-// @desc    Cerrar Sesión
+// @desc    Logout user (clean cookies)
 // @route   POST /api/auth/logout
 export const logoutUser = (req: Request, res: Response) => {
     res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
@@ -129,18 +129,17 @@ export const logoutUser = (req: Request, res: Response) => {
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
 };
 
-// @desc    Obtener usuario actual (Profile)
+// @desc    Get user profile
 // @route   GET /api/auth/profile
 // @access  Private
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
     try {
-        // req.user viene del middleware 'protect'
+        // req.user comes from the authMiddleware after verifying the JWT
         if (!req.user) {
             res.status(401).json({ message: 'No autorizado' });
             return;
         }
         
-        // CORRECCIÓN: Usamos _id en lugar de id
         const user = await User.findById(req.user._id)
         .select('-password')
         .populate('supermarket', 'name');
@@ -157,7 +156,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-// @desc    Solicitar recuperación de contraseña
+// @desc    Request password reset (send email with token)
 // @route   POST /api/auth/forgot-password
 export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -165,24 +164,22 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
         const user = await User.findOne({ email });
 
         if (!user) {
-            // Mandamos 404 pero un mensaje genérico por seguridad (para que no adivinen correos)
+            // Send 404 error to prevent email enumeration, but don't reveal that the email doesn't exist
             res.status(404).json({ message: 'Si el correo existe, se enviará un enlace de recuperación.' });
             return;
         }
 
-        // Generar un Token aleatorio de 20 caracteres
+        // Generate a random token using crypto
         const resetToken = crypto.randomBytes(20).toString('hex');
 
-        // Guardar el token en el usuario y darle 15 minutos de vida
+        // Save the token and its expiration time in the user's document
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
         await user.save();
 
-        // Crear la URL que apuntará a tu Frontend (React)
-        // OJO: Esta URL la crearemos en el frontend en el siguiente paso
         const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
 
-        // Crear el diseño del correo
+        // Create the email message with a nice design
         const message = `
             <h2>Recuperación de Contraseña - StockMaster</h2>
             <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para crear una nueva:</p>
@@ -190,7 +187,7 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
             <p style="margin-top: 20px; font-size: 12px; color: #666;">Si no solicitaste este cambio, ignora este correo. El enlace caducará en 15 minutos.</p>
         `;
 
-        // 5. Enviar el correo
+        // Send the email using the utility function
         await sendEmail({
             email: user.email,
             subject: 'Recuperación de Contraseña',
@@ -212,10 +209,10 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
         const { token } = req.params;
         const { password } = req.body;
 
-        // Buscar al usuario que tenga ese token Y que el token no haya expirado
+        // Search for user with the matching reset token and check if it's not expired
         const user = await User.findOne({
             resetPasswordToken: token,
-            resetPasswordExpire: { $gt: Date.now() } // $gt significa "Greater Than" (Mayor que ahora)
+            resetPasswordExpire: { $gt: Date.now() } // $gt means "greater than", so we check if the expiration time is in the future
         });
 
         if (!user) {
@@ -225,7 +222,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
 
         user.password = password;
 
-        // Limpiar los campos del token para que no se pueda volver a usar
+        // Clean up the reset token fields
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
         
