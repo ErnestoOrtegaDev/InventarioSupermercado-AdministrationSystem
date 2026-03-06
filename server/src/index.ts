@@ -12,13 +12,13 @@ import userRoutes from './routes/userRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
 import movementRoutes from './routes/movementRoutes';
 
-// Configuración de variables de entorno
+// Configuring environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-//Conexión a BD
+//DB Connection
 connectDB();
 
 const allowedOrigins = [process.env.FRONTEND_URL || 'http://localhost:5173'];
@@ -31,7 +31,7 @@ app.use(cors({
 app.use(express.json()); 
 app.use(cookieParser());
 
-//Rutas
+//Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/supermarkets', supermarketRoutes);
 app.use('/api/products', productRoutes);
@@ -40,7 +40,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/movements', movementRoutes);
 
-/* Ruta de prueba
+/* Test Route
 app.get('/', (req: Request, res: Response) => {
   res.json({
     msg: 'API REST Inventarios - Funcionando correctamente',
@@ -49,7 +49,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 */
 
-// Iniciar servidor
+// Initialize server
 app.listen(PORT, () => {
   console.log(`Servidor Backend corriendo en el puerto ${PORT}`);
 });
