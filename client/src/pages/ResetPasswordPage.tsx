@@ -1,3 +1,5 @@
+/* src/pages/ResetPasswordPage.tsx */
+
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
@@ -5,7 +7,7 @@ import { Lock, AlertCircle, CheckCircle, ShieldCheck } from 'lucide-react';
 import type { AxiosError } from 'axios';
 
 export const ResetPasswordPage = () => {
-    const { token } = useParams<{ token: string }>(); // Extraemos el token de la URL
+    const { token } = useParams<{ token: string }>(); // Extract the token from the URL
     const navigate = useNavigate();
     
     const [password, setPassword] = useState('');
@@ -34,7 +36,7 @@ export const ResetPasswordPage = () => {
             const { data } = await api.post(`/auth/reset-password/${token}`, { password });
             setMessage(data.message || 'Contraseña actualizada con éxito');
             
-            // Redirigir al login después de 3 segundos
+            // Redirect to login after 3 seconds
             setTimeout(() => {
                 navigate('/login');
             }, 3000);
