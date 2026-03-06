@@ -3,7 +3,7 @@ import { recordKardexMovement } from '../utils/kardexLogger';
 import Product from '../models/Product';
 import Notification from '../models/Notification';
 
-// @desc    Obtener productos de UN supermercado específico
+// @desc    Get all active products for a specific supermarket
 // @route   GET /api/products/supermarket/:supermarketId
 export const getProductsBySupermarket = async (req: Request, res: Response) => {
     try {
@@ -18,7 +18,7 @@ export const getProductsBySupermarket = async (req: Request, res: Response) => {
     }
 };
 
-// @desc    Crear Producto
+// @desc    Create a new product and record initial stock in Kardex
 // @route   POST /api/products
 // @access  Private (Admin/Worker)
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
@@ -38,14 +38,14 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
         await recordKardexMovement(
             product._id,
             product.supermarket,
-            0, // El stock previo siempre es 0 al crear
+            0, // EThe previous stock is 0 because it's a new product
             product.stock,
             'Inventario inicial (Alta de producto)'
         );
 
         res.status(201).json(product);
     } catch (error: any) {
-        // Manejo de error por SKU duplicado
+        // Manage duplicate SKU error (code 11000 in MongoDB)
         if (error.code === 11000) {
             res.status(400).json({ message: 'El SKU ya existe en este supermercado' });
             return;
@@ -54,7 +54,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-// @desc    Actualizar Producto (y verificar Alerta de Stock)
+// @desc    Update product details and manage stock changes with Kardex and notifications
 // @route   PUT /api/products/:id
 // @access  Private (Worker/Provider)
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
@@ -62,40 +62,40 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
         const { id } = req.params;
         const updateData = req.body;
 
-        // Buscamos el producto actual para guardar su stock anterior
+        // Search for the existing product to get the old stock value before updating
         const oldProduct = await Product.findById(id);
         if (!oldProduct) {
             res.status(404).json({ message: 'Producto no encontrado' });
             return;
         }
 
-        // Actualizamos en la base de datos
+        // Update the product with the new data
         const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
             new: true,
             runValidators: true
         });
 
-        // Validación de seguridad por si la actualización falló
+        // Validation: Check if the product was updated successfully
         if (!updatedProduct) {
             res.status(404).json({ message: 'Error al obtener el producto actualizado' });
             return;
         }
 
-        // LÓGICA DEL HISTORIAL DE MOVIMIENTOS (KARDEX)
-        // Verificamos si se envió el campo stock y si realmente cambió
+        // LOGIC FOR KARDEX MOVEMENT
+        // Verify if the stock has changed, if it has, we record the movement in the Kardex
         await recordKardexMovement(
             updatedProduct._id,
             updatedProduct.supermarket,
-            oldProduct.stock,       // Lo que había antes
-            updatedProduct.stock,   // Lo que hay ahora
+            oldProduct.stock,       // That it was before the update
+            updatedProduct.stock,   // That it is after the update
             'Actualización manual de producto'
         );
 
-        // LÓGICA DE ALERTA DE STOCK CRÍTICO
-        // Si el stock nuevo es menor o igual al mínimo...
+        // LOGIC FOR STOCK ALERT
+        // If the new stock is less than or equal to the minimum...
         if (updatedProduct.stock <= updatedProduct.minStock) {
             
-            // Crear la notificación en BD
+            // Create a notification for the supermarket about the critical stock level
             await Notification.create({
                 type: 'STOCK_ALERT',
                 message: `El producto ${updatedProduct.name} tiene stock crítico (${updatedProduct.stock} uds).`,
@@ -103,7 +103,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
                 product: updatedProduct._id
             });
             
-            // Enviamos la respuesta con las banderas para que SweetAlert salte en el Frontend
+            // Send the response with an alert message about the critical stock level
             res.json({
                 ...updatedProduct.toObject(),
                 alert: true, 
@@ -112,7 +112,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
             return;
         }
 
-        // Si todo sale bien y el stock es normal, respondemos la data limpia
+        // If the stock is not critical, we simply return the updated product without an alert
         res.json(updatedProduct);
 
     } catch (error) {
@@ -121,28 +121,28 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-// @desc    Eliminar Producto (Soft Delete)
+// @desc    Delete a product (Soft Delete) and record the total exit in Kardex
 // @route   DELETE /api/products/:id
 export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
         
-        // Encontramos el producto específico (en minúscula)
+        // Find the product to get its current stock before marking it as inactive
         const product = await Product.findById(id);
         if (!product) {
             res.status(404).json({ message: 'Producto no encontrado' });
             return;
         }
         
-        // Hacemos el Soft Delete
+        // Do a soft delete by marking the product as inactive instead of removing it from the database
         await Product.findByIdAndUpdate(id, { active: false });
         
-        // Registramos la salida total en el Kardex
+        // Record the total exit of the product in the Kardex, since it is being removed from active inventory
         await recordKardexMovement(
             product._id,           
             product.supermarket,  
             product.stock,         
-            0,                     // El nuevo stock útil es 0 porque se dio de baja
+            0,                     // The newest useful stock is 0 because it was deactivated
             'Baja del sistema (Producto inactivo)'
         );
         
