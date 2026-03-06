@@ -1,3 +1,5 @@
+/* src/pages/MovementHistoryPage.tsx */
+
 import { useEffect } from 'react';
 import { useMovementStore } from '../store/movementStore';
 import { useSupermarketStore } from '../store/supermarketStore';
@@ -17,7 +19,7 @@ const MovementHistory = () => {
         }
     }, [activeSupermarketId, fetchMovements]);
 
-    // Función auxiliar para renderizar el tipo de movimiento con colores
+    // Helper function to render the movement type with colors
     const renderMovementBadge = (type: string) => {
         switch (type) {
             case 'IN':
@@ -41,7 +43,7 @@ const MovementHistory = () => {
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    {/* Ícono actualizado a rose-600 */}
+                    {/* Icon updated to rose-600 */}
                     <ArrowsRightLeftIcon className="h-6 w-6 text-rose-600" />
                     Historial de Movimientos
                 </h1>
@@ -93,7 +95,7 @@ const MovementHistory = () => {
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className="text-gray-400 line-through text-xs mr-2">{mov.previousStock}</span>
-                                            {/* Nuevo stock en rose-600 en lugar de azul */}
+                                            {/* New stock in rose-600 instead of blue */}
                                             <span className="font-bold text-rose-600">{mov.newStock}</span>
                                         </td>
                                         <td className="px-6 py-4 text-gray-600 text-xs">
