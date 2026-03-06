@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 interface EmailOptions {
     email: string;
@@ -6,27 +6,19 @@ interface EmailOptions {
     message: string;
 }
 
-export const sendEmail = async (options: EmailOptions) => {
-    const transporter = nodemailer.createTransport({
-        host: '74.125.142.108',
-        port: 465,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-        tls: {
-            rejectUnauthorized: false,
-        },
-        connectionTimeout: 10000, 
-        greetingTimeout: 10000,
-    });
+const resend = new Resend(process.env.RESEND_API_KEY); 
 
-    const mailOptions = {
-        from: `"StockMaster Admin" <${process.env.EMAIL_USER}>`,
+export const sendEmail = async (options: EmailOptions) => {
+    const { data, error } = await resend.emails.send({
+        from: 'StockMaster <onboarding@resend.dev>', 
         to: options.email,
         subject: options.subject,
         html: options.message,
-    };
+    });
 
-    return await transporter.sendMail(mailOptions);
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    return data;
 };
