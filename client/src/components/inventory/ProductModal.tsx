@@ -1,4 +1,5 @@
 // src/components/inventory/ProductModal.tsx
+
 import { useState, useEffect } from 'react';
 import { X, Save, Package, Tag, DollarSign, Layers, AlertCircle, BarChart2 } from 'lucide-react';
 import { useProductStore } from '../../store/productStore';
@@ -8,7 +9,7 @@ interface ProductModalProps {
     isOpen: boolean;
     onClose: () => void;
     productToEdit?: Product | null;
-    supermarketId: string; // Crucial para saber dónde guardarlo
+    supermarketId: string; // Crucial for associating the product with the correct supermarket when creating o editando
 }
 
 export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: ProductModalProps) => {
@@ -21,11 +22,11 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
         category: 'General',
         price: '',
         stock: '',
-        minStock: '10', // Valor por defecto sugerido en tu backend
+        minStock: '10', // Value for new products, but will be overridden when editing
         active: true
     });
 
-    // Efecto para precargar datos al editar o limpiar al crear
+    // Effect for initializing form data when the modal opens or when the product to edit changes
     useEffect(() => {
         if (isOpen) {
             if (productToEdit) {
@@ -53,7 +54,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
         setIsLoading(true);
         
         try {
-            // Convertimos los strings a números para el backend
+            // Take strings from formData and convert to correct types for API
             const payload = {
                 name: formData.name,
                 sku: formData.sku,
@@ -62,7 +63,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
                 stock: Number(formData.stock),
                 minStock: Number(formData.minStock),
                 active: formData.active,
-                supermarket: supermarketId // Siempre enviamos el ID de la sucursal actual
+                supermarket: supermarketId // Always include supermarketId to ensure correct association, whether creating or editing
             };
 
             if (productToEdit) {
@@ -72,7 +73,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
             }
             onClose();
         } catch {
-            // El error (ej. SKU duplicado) ya lo muestra SweetAlert2 desde el Store
+            // The error handling is done in the store, so we don't need to do anything here. The user will see a toast notification if something goes wrong.
         } finally {
             setIsLoading(false);
         }
@@ -82,7 +83,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden my-auto animate-in fade-in zoom-in duration-200">
                 
-                {/* Encabezado */}
+                {/* Header */}
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center sticky top-0 z-10">
                     <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                         <Package className="text-rose-600" size={24} />
@@ -93,10 +94,10 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
                     </button>
                 </div>
 
-                {/* Formulario */}
+                {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                     
-                    {/* Fila 1: Nombre y SKU */}
+                    {/* Row 1: Name and SKU */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto</label>
@@ -121,7 +122,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
                         </div>
                     </div>
 
-                    {/* Fila 2: Categoría y Precio */}
+                    {/* Row 2: Category and Price */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
@@ -154,11 +155,10 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
                         </div>
                     </div>
 
-                    {/* Fila 3: Stock Actual y Stock Mínimo */}
+                    {/* Row 3: Actual Stock and Minimum Stock */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                                {/* Icono cambiado a rose-600 */}
                                 <BarChart2 size={16} className="text-rose-600" /> Stock Actual
                             </label>
                             <input 
@@ -179,7 +179,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
                         </div>
                     </div>
 
-                    {/* Checkbox de Estado (Solo Editar) */}
+                    {/* Checkbox of State  */}
                     {productToEdit && (
                         <div className="flex items-center gap-2 mt-2">
                             <input 
@@ -194,7 +194,7 @@ export const ProductModal = ({ isOpen, onClose, productToEdit, supermarketId }: 
                         </div>
                     )}
 
-                    {/* Botones */}
+                    {/* Buttons */}
                     <div className="flex gap-3 pt-4 border-t border-gray-100">
                         <button type="button" onClick={onClose} className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors">
                             Cancelar
