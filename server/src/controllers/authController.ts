@@ -124,9 +124,21 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
 // @desc    Logout user (clean cookies)
 // @route   POST /api/auth/logout
 export const logoutUser = (req: Request, res: Response) => {
-    res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
-    res.cookie('jwt-refresh', '', { httpOnly: true, expires: new Date(0) });
-    res.status(200).json({ message: 'Sesión cerrada exitosamente' });
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    const cookieOptions = {
+        httpOnly: true,
+        expires: new Date(0),
+        secure: isProduction,
+        sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+    };
+
+    res.cookie('token', '', cookieOptions);
+    
+    res.cookie('jwt', '', cookieOptions);
+    res.cookie('jwt-refresh', '', cookieOptions);
+
+    res.status(200).json({ message: 'Logged out successfully' });
 };
 
 // @desc    Get user profile
