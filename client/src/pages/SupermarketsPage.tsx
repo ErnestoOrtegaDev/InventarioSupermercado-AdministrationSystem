@@ -1,4 +1,4 @@
-/*src/pages/SuperMarketPage.tsx */ 
+/* src/pages/SuperMarketPage.tsx */ 
 
 import { useEffect, useState } from 'react';
 import { useSupermarketStore } from '../store/supermarketStore';
@@ -11,21 +11,21 @@ const ImageLoader = ({ src, alt, className, onError }: { src: string; alt: strin
 
     return (
         <div className="relative w-full h-full bg-gray-100">
-            {/* Spinner: Se muestra mientras la imagen no haya cargado */}
+            {/* Spinner: Displayed while the image is loading */}
             {!isLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-400"></div>
                 </div>
             )}
             
-            {/* Imagen: Invisible (opacity-0) hasta que carga, luego hace un fade-in (opacity-100) */}
+            {/* Image: Invisible (opacity-0) until loaded, then performs a fade-in (opacity-100) */}
             <img 
                 src={src}
                 alt={alt}
-                onLoad={() => setIsLoaded(true)} // ¡La magia ocurre aquí!
+                onLoad={() => setIsLoaded(true)} // The magic happens here!
                 onError={(e) => { 
                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1000';
-                    setIsLoaded(true); // Quitamos el spinner aunque falle
+                    setIsLoaded(true); // Remove spinner even if loading fails
                     onError?.(e);
                 }}
                 className={`transition-opacity duration-500 ease-in-out ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className || ''}`}
@@ -35,33 +35,33 @@ const ImageLoader = ({ src, alt, className, onError }: { src: string; alt: strin
 };
 
 export const SupermarketsPage = () => {
-    // Extraemos el estado y las funciones de nuestro store (Zustand)
+    // Extract state and functions from our store (Zustand)
     const { supermarkets, fetchSupermarkets, deleteSupermarket, isLoading } = useSupermarketStore();
 
-    // Estado local para controlar si la ventana modal está abierta o cerrada
+    // Local state to control whether the modal window is open or closed
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Estado para saber qué supermercado vamos a editar
+    // State to track which supermarket is being edited
     const [supermarketToEdit, setSupermarketToEdit] = useState<Supermarket | null>(null);
 
-    // Efecto secundario: Cargar la lista de supermercados al montar el componente
+    // Side effect: Load the supermarket list when the component mounts
     useEffect(() => {
         fetchSupermarkets();
     }, [fetchSupermarkets]);
     
 
     const handleOpenCreate = () => {
-        setSupermarketToEdit(null); // Limpiamos para que salga en blanco
+        setSupermarketToEdit(null); // Clear state to open a blank form
         setIsModalOpen(true);
     };
 
     const handleOpenEdit = (supermarket: Supermarket) => {
-        setSupermarketToEdit(supermarket); // Le pasamos los datos a la modal
+        setSupermarketToEdit(supermarket); // Pass data to the modal
         setIsModalOpen(true);
     };
 
     return (
     <div className="space-y-6">
-            {/* --- Encabezado de la Sección --- */}
+            {/* --- Section Header --- */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800">Supermercados</h1>
@@ -76,14 +76,14 @@ export const SupermarketsPage = () => {
                 </button>
             </div>
 
-            {/* --- Estado de Carga (Spinner) --- */}
+            {/* --- Loading State (Spinner) --- */}
             {isLoading && (
                 <div className="flex justify-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-600"></div>
                 </div>
             )}
 
-            {/* --- Estado Vacío (Sin datos) --- */}
+            {/* --- Empty State (No data) --- */}
             {!isLoading && supermarkets.length === 0 && (
                 <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
                     <Store className="mx-auto h-16 w-16 text-gray-300 mb-4" />
@@ -92,12 +92,12 @@ export const SupermarketsPage = () => {
                 </div>
             )}
 
-            {/* --- Grid de Tarjetas (Lista de Supermercados) --- */}
+            {/* --- Card Grid (Supermarket List) --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {supermarkets.map((supermarket) => (
                     <div key={supermarket._id} className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow overflow-hidden group">
                         
-                        {/* Contenedor de la Imagen */}
+                        {/* Image Container */}
                         <div className="h-40 bg-gray-200 relative">
                             {supermarket.image ? (
                                 <ImageLoader
@@ -111,33 +111,33 @@ export const SupermarketsPage = () => {
                                 </div>
                             )}
                             
-                            {/* Badge flotante de Estado */}
+                            {/* Floating Status Badge */}
                             <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold ${supermarket.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                 {supermarket.active ? 'Activo' : 'Inactivo'}
                             </div>
                         </div>
 
-                        {/* Contenido de la Tarjeta (Info) */}
+                        {/* Card Content (Info) */}
                         <div className="p-5">
                             <h3 className="text-lg font-bold text-gray-800 mb-2">{supermarket.name}</h3>
                             
-                            {/* Detalles de contacto */}
+                            {/* Contact Details */}
                             <div className="space-y-2 text-sm text-gray-600">
                                 <div className="flex items-start gap-2">
-                                    {/* Ícono cambiado a rose-600 */}
+                                    {/* Icon updated to rose-600 */}
                                     <MapPin size={16} className="mt-0.5 text-rose-600" />
                                     <span>{supermarket.address}</span>
                                 </div>
                                 {supermarket.phone && (
                                     <div className="flex items-center gap-2">
-                                        {/* Ícono cambiado a rose-600 */}
+                                        {/* Icon updated to rose-600 */}
                                         <Phone size={16} className="text-rose-600" />
                                         <span>{supermarket.phone}</span>
                                     </div>
                                 )}
                             </div>
 
-                            {/* Acciones de la Tarjeta (Botones) */}
+                            {/* Card Actions (Buttons) */}
                             <div className="mt-5 pt-4 border-t border-gray-100 flex justify-end gap-2">
                                 
                                 <button 
@@ -148,7 +148,7 @@ export const SupermarketsPage = () => {
                                     <Edit size={18} />
                                 </button>
 
-                                {/* Botón Eliminar */}
+                                {/* Delete Button */}
                                 <button 
                                     onClick={() => deleteSupermarket(supermarket._id)}
                                     className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -162,7 +162,7 @@ export const SupermarketsPage = () => {
                 ))}
             </div>
 
-            {/* --- Modal Flotante --- */}
+            {/* --- Floating Modal --- */}
             <SupermarketModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)}
@@ -172,4 +172,3 @@ export const SupermarketsPage = () => {
         </div>
     );
 };
-
