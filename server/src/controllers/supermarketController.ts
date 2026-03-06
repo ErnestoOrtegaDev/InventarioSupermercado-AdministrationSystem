@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Supermarket from '../models/Supermarket';
 
-// @desc    Obtener todos los supermercados
+// @desc    Get all supermarkets (with role-based access control)
 // @route   GET /api/supermarkets
 // @access  Private (Admin/Worker/Provider)
 export const getSupermarkets = async (req: Request, res: Response): Promise<void> => {
@@ -14,13 +14,13 @@ export const getSupermarkets = async (req: Request, res: Response): Promise<void
 
         let query = { active: true }; 
 
-        // LÓGICA DE ROLES:
+        // RBAC:
         
-        // CASO A: Admin o Proveedor -> Ven TODOS los supermercados
+        // CASE A: Admin o Provider -> Seen all supermarkets
         if (role === 'admin' || role === 'provider') {
         } 
         
-        // CASO B: Manager o Worker -> Solo ven SU supermercado
+        // CASE B: Manager o Worker -> Seen only assigned supermarket
         else if (role === 'manager' || role === 'worker') {
             if (!supermarket) {
                 res.status(400).json({ message: 'Usuario sin supermercado asignado' });
@@ -38,12 +38,12 @@ export const getSupermarkets = async (req: Request, res: Response): Promise<void
     }
 };
 
-// @desc    Crear un supermercado
+// @desc    Create a new supermarket
 // @route   POST /api/supermarkets
 // @access  Private (Admin Only)
 export const createSupermarket = async (req: Request, res: Response): Promise<void> => {
     try {
-        // Nota: req.user vendrá del middleware
+        // Note: req.user is populated by auth middleware
         if (!req.user) {
             res.status(401).json({ message: 'Usuario no autenticado' });
             return;
@@ -71,7 +71,7 @@ export const createSupermarket = async (req: Request, res: Response): Promise<vo
     }
 };
 
-// @desc    Actualizar un supermercado
+// @desc    Update a supermarket
 // @route   PUT /api/supermarkets/:id
 // @access  Private (Admin Only)
 export const updateSupermarket = async (req: Request, res: Response): Promise<void> => {
@@ -95,7 +95,7 @@ export const updateSupermarket = async (req: Request, res: Response): Promise<vo
     }
 };
 
-// @desc    Eliminar (Soft Delete) un supermercado
+// @desc    Delete (soft delete) a supermarket
 // @route   DELETE /api/supermarkets/:id
 // @access  Private (Admin Only)
 export const deleteSupermarket = async (req: Request, res: Response): Promise<void> => {
@@ -108,7 +108,7 @@ export const deleteSupermarket = async (req: Request, res: Response): Promise<vo
             return;
         }
 
-        // Soft delete: Solo cambiamos active a false
+        // Soft delete: Only change active status to false
         supermarket.active = false;
         await supermarket.save();
 
