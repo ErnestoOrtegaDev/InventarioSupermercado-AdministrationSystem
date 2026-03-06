@@ -176,30 +176,19 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
         const user = await User.findOne({ email });
 
         if (!user) {
-            // Send 404 error to prevent email enumeration, but don't reveal that the email doesn't exist
-            res.status(404).json({ message: 'Si el correo existe, se enviará un enlace de recuperación.' });
+            res.status(200).json({ message: 'Si el correo existe, se enviará un enlace de recuperación.' });
             return;
         }
 
-        // Generate a random token using crypto
         const resetToken = crypto.randomBytes(20).toString('hex');
-
-        // Save the token and its expiration time in the user's document
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+        user.resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000);
         await user.save();
 
-        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-        // Create the email message with a nice design
-        const message = `
-            <h2>Recuperación de Contraseña - StockMaster</h2>
-            <p>Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para crear una nueva:</p>
-            <a href="${resetUrl}" style="background-color: #e11d48; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">Restablecer Contraseña</a>
-            <p style="margin-top: 20px; font-size: 12px; color: #666;">Si no solicitaste este cambio, ignora este correo. El enlace caducará en 15 minutos.</p>
-        `;
+        const message = `<h2>Recuperación de Contraseña</h2><a href="${resetUrl}">Restablecer</a>`;
 
-        // Send the email using the utility function
         await sendEmail({
             email: user.email,
             subject: 'Recuperación de Contraseña',
@@ -208,9 +197,12 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
 
         res.status(200).json({ message: 'Correo enviado con éxito' });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error al procesar la solicitud' });
+    } catch (error: any) {
+        res.status(500).json({ 
+            message: 'Error al procesar la solicitud',
+            error: error.message || 'Error desconocido',
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+        });
     }
 };
 
