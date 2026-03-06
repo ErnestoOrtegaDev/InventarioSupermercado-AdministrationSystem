@@ -43,18 +43,18 @@ export const LoginPage = () => {
     return (
         <div className="relative min-h-screen flex items-center justify-center bg-gray-50 overflow-hidden p-4">
             
-            {/* --- Formas Degradadas de Fondo (Blobs) --- */}
-            {/* Círculo Vino Superior Izquierdo */}
+            {/* --- Background Gradient Shapes (Blobs) --- */}
+            {/* Upper Left Wine Circle */}
             <div className="absolute top-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-gradient-to-br from-rose-400 to-rose-900 rounded-full mix-blend-multiply filter blur-[100px] opacity-60 pointer-events-none animate-pulse-slow"></div>
             
-            {/* Círculo Guinda Inferior Derecho */}
+            {/* Lower Right Claret Circle */}
             <div className="absolute bottom-[-10%] right-[-10%] w-[35rem] h-[35rem] bg-gradient-to-tl from-rose-950 via-rose-800 to-red-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-50 pointer-events-none"></div>
 
-            {/* --- Contenedor Principal (Glassmorphism) --- */}
+            {/* --- Main Container (Glassmorphism) --- */}
             <div className="relative w-full max-w-md">
                 <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 overflow-hidden">
                     
-                    {/* Encabezado */}
+                    {/* Header */}
                     <div className="px-8 pt-10 pb-6 text-center">
                         <div className="inline-flex items-center justify-center p-3 bg-gradient-to-br from-rose-800 to-rose-900 rounded-2xl shadow-lg shadow-rose-900/30 mb-5">
                             <PackageSearch className="text-white h-8 w-8" />
@@ -63,11 +63,11 @@ export const LoginPage = () => {
                         <p className="text-rose-700 font-medium mt-1">Sistema de Gestión de Inventarios</p>
                     </div>
 
-                    {/* Formulario */}
+                    {/* Form */}
                     <div className="px-8 pb-10">
                         <form onSubmit={handleSubmit} className="space-y-6">
                             
-                            {/* Mensaje de Error */}
+                            {/* Error Message */}
                             {error && (
                                 <div className="bg-red-50/90 text-red-600 p-4 rounded-xl flex items-center gap-3 text-sm border border-red-100 shadow-sm animate-fade-in">
                                     <AlertCircle className="flex-shrink-0" size={18} />
@@ -93,7 +93,7 @@ export const LoginPage = () => {
                             </div>
 
                             <div className="space-y-2">
-                                {/* Contenedor Flex para el Label y el Enlace */}
+                                {/* Flex Container for Label and Link */}
                                 <div className="flex justify-between items-center px-1">
                                     <label className="text-sm font-bold text-gray-700">Contraseña</label>
                                     <Link 
@@ -145,7 +145,7 @@ export const LoginPage = () => {
                     </div>
                 </div>
                 
-                {/* Pie de página pequeño flotante */}
+                {/* Floating small footer */}
                 <p className="text-center text-sm text-gray-500 font-medium mt-6">
                     &copy; {new Date().getFullYear()} StockMaster Inc.
                 </p>
